@@ -65,6 +65,11 @@ app.use((err, req, res, next) => {
     // logic
 });
 
+app.get("/", (req, res) => {
+  throw new Error("/ is not valid!");
+});
+
+
 app.get('/movies', (req, res) => {
     res.send(bestMovies);
 });
