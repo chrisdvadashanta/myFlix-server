@@ -3,7 +3,8 @@ const express = require('express'),
     fs = require('fs'),
     path = require('path')
     bodyParser = require('body-parser'),
-    methodOverride = require('method-override');
+    methodOverride = require('method-override')
+    errorHandler = (err,req,res,next);
 
 const app = express();
 
@@ -61,13 +62,10 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(methodOverride());
 
-app.use((err, req, res, next) => {
-    // logic
-});
 
-app.get("/", (req, res) => {
-  throw new Error("/ is not valid!");
-});
+app.get("/", (req, res, next) => {
+    next(new Error("/ is not valid!")); // Pass the error to the error middleware
+  });
 
 
 app.get('/movies', (req, res) => {
@@ -79,6 +77,13 @@ app.get('/', (req, res) => {
     res.send('This is my default text!');
 });
 
+app.use(errorHandler);
+
+app.use((err, req, res, next) => {
+    console.log("Error happened", err); 
+    res.status(500).send('Internal Server Error');
+});
+
 app.listen(8080, () => {
-    console.log('Your app is listening on port 8000.');
+    console.log('Your app is listening on port 8080.');
 });
