@@ -8,6 +8,15 @@
 
   </head>
   <body>
+    <style>
+      table {
+          border-collapse: collapse;
+      }
+      th, td {
+          border: 1px solid black;
+          padding: 8px;
+      }
+  </style>
     <header>
         myFlix
     </header>
@@ -18,5 +27,131 @@
         to sign up, update their personal information, and create a list <br>
         of their favorite movies.
     </p>
+  
+    <table \\>
+      <thead>
+        <tr>
+          <th>Nr.</th>
+          <th>Business Logic</th>
+          <th>URL</th>
+          <th>HTTTP Method</th>
+          <th>Request body data format</th>
+          <th>Response body data format</th>
+        </tr>
+      </thead>  
+      <tbody>
+            <tr>
+              <td>1.</td>
+              <td>Return a list of ALL movies to the user</td>
+              <td>/movies</td>
+              <td>GET</td>
+              <td>None</td>
+              <td>A JSON Object holding data about all the movies</td>
+          </tr>
+          <tr>
+            <td>2.</td>
+              <td>Return data (description, genre, director, image URL, <br>
+                whether it’s featured or not) about a single movie by title to the user</td>
+              <td>/movies/movie[description][genre][director][image][URL]</td>
+              <td>GET</td>
+              <td>None</td>
+              <td>A JSON Object holding data about all the movies</td>
+          </tr>
+          <tr>
+            <td>3.</td>
+            <td>Return data about a director (bio, birth year, death year) by name</td>
+            <td>/movies/director/[bio][birthyear][deathyear]</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>A JSON Object holding data about one director</td>
+          </tr>
+          <tr>
+            <td>4.</td>
+            <td>Return data about a genre (description) by name/title (e.g., “Thriller”)</td>
+            <td>/genre[name][description]</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>A JSON Object holding data about one genre</td>
+          </tr>
+          <tr>
+            <td>5.</td>
+            <td>Allow new users to register</td>
+            <td>/users</td>
+            <td>POST</td>
+            <td>A JSON object holding data about the user to add. structured like:<br>
+              {<br>{
+                "id": "f3e09c3b-4e16-4e7c-8b03-987654321abc",<br>
+                "name": "John Doe",<br>
+                "email": "johndoe@example.com",<br>
+                "favoriteMovie": "Dune"<br>
+              }
+              <br>
+            }
+            </td>
+            <td>A JSON object holding data about the user that was added, including an ID:<br>
+              {<br>{
+                "id": "f3e09c3b-4e16-4e7c-8b03-987654321abc",<br>
+                "name": "John Doe",<br>
+                "email": "johndoe@example.com",<br>
+                "favoriteMovie": "Dune"<br>
+              }
+              <br>
+            </td>
+          </tr>
+          <tr>
+            <td>6.</td>
+            <td>Allow users to update their user info (username)</td>
+            <td>/users/[Name]/[Email]/[favorite-movie]</td>
+            <td>PUT</td>
+            <td>None</td>
+            <td>A text message indicating the user, email, and favorite-movie that was updated</td>
+          </tr>
+          <tr>
+            <td>7.</td>
+            <td>Allow users to add a movie to their list of favorites <br>
+              (showing only a text that a movie has been added—more on this later)</td>
+            <td>/movies</td>
+            <td>POST</td>
+            <td>A JSON object holding data about the movie to add. structured like:<br>
+              {<br>"id": 1
+                "title": "The Shawshank Redemption",
+              "director": "Frank Darabont",
+              "year": 1994,
+              "genre": "Drama",
+              "length": 142<br>
+            }
+            </td>
+            <td>A JSON object holding data about the movie that was added, including an ID:<br>
+              {<br>"id": 1
+              "title": "The Shawshank Redemption",
+            "director": "Frank Darabont",
+            "year": 1994,
+            "genre": "Drama",
+            "length": 142<br>
+            }
+            </td>
+          </tr>
+          <tr>
+            <td>8.</td>
+            <td>Allow users to remove a movie from their list of favorites <br>
+              (showing only a text that a movie has been removed—more on this later)</td>
+            <td>/users[favorites]</td>
+            <td>DELETE</td>
+            <td>None</td>
+            <td>A text message indicating whether the favorite movie was successfully removed
+            </td>
+          </tr>
+          <tr>
+            <td>9.</td>
+            <td>Allow existing users to deregister (showing only a text <br>
+              that a user email has been removed—more on this later)</td>
+            <td>/users[Email]</td>
+            <td>PUT</td>
+            <td>None</td>
+            <td>A text message indicating whether the email was successfully removed</td>
+          </tr>
+      </tbody>
+    </table>
+
   </body>
 </html>
