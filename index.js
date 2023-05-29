@@ -6,262 +6,216 @@ const express = require('express'),
     methodOverride = require('method-override'),
     uuid = require('uuid');
 
+//////////// MONGOOSE Integration ////////////////    
+const mongoose = require('mongoose');
+const Models = require ('./models');
+
+const Movies = Models.Movies ;
+const Users = Models.Users ;
+
+mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useUnifiedTopology: true });
+
+/////// EXPRESS ///////
 const app = express();
-
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
-
-let users = [
-    {
-        "id": "1",
-      "name": "Joe Biden",
-      "email": "joe@gmail.com",
-      "favoriteMovies": [],
-    },
-    {
-        "id": "2",
-      "name": "Hilary Biden",
-      "email": "hilary@gmail.com",
-      "favoriteMovies": ["Nomadland"] ,
-    },
-]
-let movies = [
-    {
-      "Title": "Soul",
-      "Genre": 
-      {
-        "Name": "Animation",
-        "Description": "Animation is a genre of film that uses techniques like drawings, computer graphics, or stop-motion to create the illusion of movement...",
-      },
-      "Description": "Soul is a 2020 American computer-animated fantasy comedy-drama film...",
-      "Director": {
-        "Name": "Pete Docter",
-        "Bio": "Pete Docter was born on October 9, 1968, in Bloomington, Minnesota...",
-        "Birth": 1968,
-        "ImageURL": "https://example.com/pete-docter.jpg"
-      },
-      "Featured": true
-    },
-    {
-      "Title": "Nomadland",
-      "Genre": 
-      {
-        "Name": "Drama",
-        "Description": "Drama is a genre of film that focuses on realistic characters and intense emotional themes. It often explores complex human relationships and societal issues...",
-      },      
-      "Description": "Nomadland is a 2020 American drama film...",
-      "Director": {
-        "Name": "Chloé Zhao",
-        "Bio": "Chloé Zhao was born on March 31, 1982, in Beijing, China...",
-        "Birth": 1982,
-        "ImageURL": "https://example.com/chloe-zhao.jpg"
-      },
-      "Featured": true
-    },
-    {
-      "Title": "Mank",
-      "Genre": {
-        "Name": "Drama",
-        "Description": "Drama is a genre of film that focuses on realistic characters and intense emotional themes. It often explores complex human relationships and societal issues...",
-      },      
-      "Description": "Mank is a 2020 American biographical drama film...",
-      "Director": {
-        "Name": "David Fincher",
-        "Bio": "David Fincher was born on August 28, 1962, in Denver, Colorado...",
-        "Birth": 1962,
-        "ImageURL": "https://example.com/david-fincher.jpg"
-      },
-      "Featured": true
-    },
-    {
-      "Title": "Minari",
-      "Genre": {
-        "Name": "Drama",
-        "Description": "Drama is a genre of film that focuses on realistic characters and intense emotional themes. It often explores complex human relationships and societal issues...",
-      },      
-      "Description": "Minari is a 2020 American drama film...",
-      "Director": {
-        "Name": "Lee Isaac Chung",
-        "Bio": "Lee Isaac Chung was born on October 19, 1978, in Denver, Colorado...",
-        "Birth": 1978,
-        "ImageURL": "https://example.com/lee-isaac-chung.jpg"
-      },
-      "Featured": true
-    },
-    {
-      "Title": "Promising Young Woman",
-      "Genre": {
-        "Name": "Thriller",
-        "Description": "Thriller is a genre of film characterized by suspense, tension, and excitement. It often involves unexpected twists, thrilling plot developments, and keeps the audience on the edge of their seats..."
-      },
-      "Description": "Promising Young Woman is a 2020 American black comedy thriller film...",
-      "Director": {
-        "Name": "Emerald Fennell",
-        "Bio": "Emerald Fennell was born on October 1, 1985, in Hammersmith, London...",
-        "Birth": 1985,
-        "ImageURL": "https://example.com/emerald-fennell.jpg"
-      },
-      "Featured": true
-    },
-    {
-      "Title": "The Trial of the Chicago 7",
-      "Genre":  {
-        "Name": "Drama",
-        "Description": "Drama is a genre of film that focuses on realistic characters and intense emotional themes. It often explores complex human relationships and societal issues...",
-      },   
-      "Description": "The Trial of the Chicago 7 is a 2020 American legal drama film...",
-      "Director": {
-        "Name": "Aaron Sorkin",
-        "Bio": "Aaron Sorkin was born on June 9, 1961, in New York City, New York...",
-        "Birth": 1961,
-        "ImageURL": "https://example.com/aaron-sorkin.jpg"
-      },
-      "Featured": true
-    },
-]   
-
-app.use(express.static('public'));
-app.use(morgan('combined', { stream: accessLogStream }));
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-
+app.use(bodyParser.urlencoded({ extended: true })),
 app.use(bodyParser.json());
+app.use(express.static('public'));
 app.use(methodOverride());
 
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
+app.use(morgan('common', {stream: accessLogStream }));
 
+////////ERROR HANDLING ////////
 app.get("/error/", (req, res, next) => {
     next(new Error("/ is not valid!")); // Pass the error to the error middleware
   });
 
-//1. Gets the list of data about ALL movies
+///////// 1. Gets the list of data about ALL movies 
 app.get('/movies', (req, res) => {
-    res.send(bestMovies);
+  Movies.find()
+  .then((movies) => {
+    res.status(201).send.json(movies);
+  })
+  .catch((error) => {
+    console.error(error);
+    res.status(500).send('Error: ' + error);
+  });
 });
 
-//2. Return data (description, genre, director, image, URL,
+
+//////// 2. Return data (description, genre, director, image, URL, 
 //whether it’s featured or not) about a single movie by title to the user
 app.get('/movies/:title', (req, res) => {
-    const { title } = req.params;
-    const movie = movies.find(movie => movie.Title === title);
-
-    if (movie) {
-        res.status(200).json(movie);
-    } else {
-        res.status(400).send('no such movie');
-    }
+  Movies.findOne({ Title: req.params.title })
+    .then((movie) => {
+      if (movie) {
+        res.json(movie);
+      } else {
+        res.status(404).send('Movie not found');
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
 });
 
-  
-
-//3. Return data about a director (bio, birth year, death year) by name
-app.get ('/movies/directors/:directorName', (req, res) => {
-    const { directorName } = req.params;
-    const director = movies. find( movie => movie.Director.Name === directorName ).Director;
-    if (director){
-        res.status (200).json (director);
-    } else {
-    res.status (400).send("no such Director");
-    }
+//////// 3. Return data about a director (bio, birth year, death year) by name
+app.get('/movies/directors/:directorName', (req, res) => {
+  Movies.findOne({ 'Director.Name': req.params.directorName })
+    .then(movie => {
+      if (movie) {
+        res.json(movie.Director);
+      } else {
+        res.status(404).send('No movie found for the specified director');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
 });
 
-  
 
-//4. Return data about a genre (description) by name/title (e.g., “Thriller”)
+
+
+///////// 4. Return data about a genre (description) by name/title (e.g., “Thriller”)  
 app.get ('/movies/genre/:genreName', (req, res) => {
-    const { genreName } = req.params;
-    const genre = movies. find( movie => movie.Genre.Name === genreName ).Genre;
-    if (genre){
-        res.status (200).json (genre);
+  Movies.findOne({ 'Genre.Name': req.params.genreName })
+  .then(movie => {
+    if (movie) {
+      res.json(movie.genre);
     } else {
-    res.status (400).send("no such genre");
+      res.status(404).send('No movie found for the specified genre');
     }
+  })
+  .catch(error => {
+    console.error(error);
+    res.status(500).send('Error: ' + error);
+  });
 });
 
-
-//5. Allow new users to register
+/////////// 5. Allow new users to register 
 app.post('/users', (req, res) => {
-    let newUser = req.body;
-  
-    if (!newUser.name) {
-      const message = 'Missing name in request body';
-      res.status(400).send(message);
-    } else {
-      newUser.id = uuid.v4();
-      users.push(newUser);
-      res.status(201).json(newUser);
-    }
-  });
-  
+  Users.findOne({ Username: req.body.Username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + 'already exists');
+      } else {
+        Users
+          .create({
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+          })
+          .then((user) =>{res.status(201).json(user) })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).send('Error: ' + error);
+        })
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
+});
+
+//5a. Get a user by name
+app.get('/users/:Username', (req, res) => {
+  Users.findOne({ Username: req.params.Username })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
 
 //6. Allow users to update their user info (username)
-app.put('/users/:id', (req, res) => {
-    const { id  } = req.params;
-    let updatedUser = req.body;
-    
-    let user = users.find(user => user.id == id); //using two = bc the URL is a string and compare thruthyness
-
-    if (user){
-        user.name = updatedUser.name;
-        res.status(200).json(user);
-    } else {
-        res.status(400).send('no such user'); 
-    }
-  
+  app.put('/users/:Username', (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
+      {
+        username: req.body.Username,
+        password: req.body.Password,
+        email: req.body.Email,
+        birthday: req.body.Birthday
+      }
+    },
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
   });
 
-//7. Allow users to add a movie to their list of favorites
+//7. Allow users to add a movie to their list of favorites 
 //   (showing only a text that a movie has been added—more on this later)
-app.post('/users/:id/:movieTitle', (req, res) => {
-    const { id, movieTitle  } = req.params;
-    
-    let user = users.find(user => user.id == id); //using two = bc the URL is a string and compare thruthyness
-
-    if (user){
-        user.favoriteMovies.push(movieTitle);
-        res.status(200).send(`${movieTitle} has been added to ${id} favorites`);
+app.post('/users/:Username/movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate({ Username: req.params.Username }, {
+     $push: { FavoriteMovies: req.params.MovieID }
+   },
+   { new: true }, // This line makes sure that the updated document is returned
+  (err, updatedUser) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
     } else {
-        res.status(400).send('no such user'); 
+      res.json(updatedUser);
     }
-  
   });
- 
+});
 
 //8. Allow users to remove a movie from their list of favorites
-// (showing only a text that a movie has been removed—more on this later)
-app.delete('/users/:id/:movieTitle', (req, res) => {
-    const { id, movieTitle  } = req.params;
-    
-    let user = users.find(user => user.id == id); //using two = bc the URL is a string and compare thruthyness
 
-    if (user){
-        user.favoriteMovies = user.favoriteMovies.filter( title => title !== movieTitle )
-        res.status(200).send(`${movieTitle} has been removed from ${id} favorites`);
+app.delete('/users/:id/:movieTitle', async (req, res) => {
+  const { id, movieTitle } = req.params;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $pull: { favoriteMovies: movieTitle } },
+      { new: true }
+    );
+
+    if (user) {
+      res.status(200).send(`${movieTitle} has been removed from ${id} favorites`);
     } else {
-        res.status(400).send('no such user'); 
+      res.status(400).send('No such user');
     }
-  
-  });
+  } catch (error) {
+    res.status(500).send('An error occurred');
+  }
+});
+
 
 //9. Allow existing users to deregister (showing only a text
 // that a user email has been removed—more on this later)
-app.delete('/users/:id/', (req, res) => {
-    const { id } = req.params;
-    
-    let user = users.find(user => user.id == id); //using two = bc the URL is a string and compare thruthyness
-
-    if (user){
-        users = users.filter( user => user.id != id )
-        res.status(200).send(`User ${id} has been deleted`);
-    } else {
-        res.status(400).send('no such user'); 
-    }
-  
-  });
+app.delete('/users/:Username', (req, res) => {
+  Users.findOneAndRemove({ Username: req.params.Username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.Username + ' was not found');
+      } else {
+        res.status(200).send(req.params.Username + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
   
 app.get('/', (req, res) => {
-    res.send('This is my default text!');
+    res.send('Welcome to myFlix app');
 });
-
 
 app.use((err, req, res, next) => {
     console.log("Error happened", err); 
