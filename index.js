@@ -89,7 +89,7 @@ app.get('/movies/directors/:directorName', (req, res) => {
 
 ///////// 4. Return data about a genre (description) by name/title (e.g., “Thriller”)  
 app.get(
-  '/movies/genres/:genreName',  (req, res) => {
+  '/movies/genre/:genreName',  (req, res) => {
     Movies.find({ 'Genre.Name': req.params.genreName })
       .then((movies) => {
         res.status(200).json(movies);
@@ -129,7 +129,7 @@ app.post('/users', (req, res) => {
     });
 });
 
-//5a. Get a user by name
+/////////// 5a. Get a user by name
 app.get('/users/:Username', (req, res) => {
   Users.findOne({ Username: req.params.Username })
     .then((user) => {
@@ -141,22 +141,23 @@ app.get('/users/:Username', (req, res) => {
     });
 });
 
+////////////?????????????//////////
 
-//6. Allow users to update their user info (username)
+/////////// 6. Allow users to update their user info (username)
 app.put('/users/:Username', (req, res) => {
   Users.findOneAndUpdate(
     { Username: req.params.Username },
     {
       $set: {
-        Username: req.body.Username,
-        Password: req.body.Password,
-        Email: req.body.Email,
-        Birthday: req.body.Birthday
+        username: req.body.Username,
+        password: req.body.Password,
+        email: req.body.Email,
+        birthday: req.body.Birthday
       }
     },
     { new: true }
   )
-    .then(updatedUser => {
+    .then((updatedUser) => {
       res.json(updatedUser);
     })
     .catch(err => {
@@ -167,9 +168,9 @@ app.put('/users/:Username', (req, res) => {
 
 //7. Allow users to add a movie to their list of favorites 
 //   (showing only a text that a movie has been added—more on this later)
-app.post('/users/:Username/movies/:MovieID', (req, res) => {
+app.post('/users/:Username/movies/:Title', (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
-    $push: { FavoriteMovies: req.params.MovieID }
+    $push: { FavoriteMovies:req.params.Title }
   },
     { new: true }, // This line makes sure that the updated document is returned
 
@@ -182,6 +183,7 @@ app.post('/users/:Username/movies/:MovieID', (req, res) => {
       }
     });
 });
+
 
 //8. Allow users to remove a movie from their list of favorites
 
