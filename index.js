@@ -38,7 +38,7 @@ app.get("/error/", (req, res, next) => {
 });
 
 ///////// 1. Gets the list of data about ALL movies 
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(200).send(res.json(movies));
@@ -52,7 +52,7 @@ app.get('/movies', (req, res) => {
 
 //////// 2. Return data (description, genre, director, image, URL, 
 //whether it’s featured or not) about a single movie by title to the user
-app.get('/movies/:title', (req, res) => {
+app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne({ Title: req.params.title })
     .then((movies) => {
       if (movies) {
@@ -69,7 +69,7 @@ app.get('/movies/:title', (req, res) => {
 });
 
 //////// 3. Return data about a director (bio, birth year, death year) by name
-app.get('/movies/directors/:directorName', (req, res) => {
+app.get('/movies/directors/:directorName',passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne({ 'Director.Name': req.params.directorName })
     .then(movie => {
       if (movie) {
@@ -84,12 +84,8 @@ app.get('/movies/directors/:directorName', (req, res) => {
     });
 });
 
-
-
-
 ///////// 4. Return data about a genre (description) by name/title (e.g., “Thriller”)  
-app.get(
-  '/movies/genre/:genreName',  (req, res) => {
+app.get( '/movies/genre/:genreName', passport.authenticate('jwt', { session: false }), (req, res) => {
     Movies.find({ 'Genre.Name': req.params.genreName })
       .then((movies) => {
         res.status(200).json(movies);
@@ -99,8 +95,6 @@ app.get(
       });
   }
 );
-
-
 
 /////////// 5. Allow new users to register 
 app.post('/users', (req, res) => {
@@ -141,23 +135,23 @@ app.get('/users/:Username', (req, res) => {
     });
 });
 
-////////////?????????????//////////
-
 /////////// 6. Allow users to update their user info (username)
 app.put('/users/:Username', (req, res) => {
+  console.log("req.body", req.body)
   Users.findOneAndUpdate(
-    { Username: req.params.Username },
+    { username: req.params.Username },
     {
       $set: {
-        username: req.body.Username,
-        password: req.body.Password,
-        email: req.body.Email,
-        birthday: req.body.Birthday
+        username: req.body.username,
+        password: req.body.password,
+        email: req.body.email,
+        birthday: req.body.birthday
       }
     },
     { new: true }
   )
     .then((updatedUser) => {
+      console.log(updatedUser);
       res.json(updatedUser);
     })
     .catch(err => {
@@ -166,52 +160,48 @@ app.put('/users/:Username', (req, res) => {
     });
 });
 
-//7. Allow users to add a movie to their list of favorites 
-//   (showing only a text that a movie has been added—more on this later)
-app.post('/users/:Username/movies/:Title', (req, res) => {
-  Users.findOneAndUpdate({ Username: req.params.Username }, {
-    $push: { FavoriteMovies:req.params.Title }
+////////////////// 7. Allow users to add a movie to their list of favorites 
+app.post('/users/:Username/movies/:Title', async (req, res) => {
+  const movieTitle = req.params.Title
+  const movie = await Movies.findOne({Title: movieTitle});
+
+  console.log("movies", movie._id);
+
+  let newUser = await Users.findOneAndUpdate({ username: req.params.Username }, {
+    $push: { Favorites: movie._id }
   },
     { new: true }, // This line makes sure that the updated document is returned
-
-    (err, updatedUser) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Error: ' + err);
-      } else {
-        res.json(updatedUser);
-      }
-    });
+  );
+    return res.json(newUser);
 });
 
 
-//8. Allow users to remove a movie from their list of favorites
+////////////////// 8. Allow users to remove a movie from their list of favorites
 
-app.delete('/users/:id/:movieTitle', async (req, res) => {
-  const { id, movieTitle } = req.params;
-
+app.delete('/users/:Username/movies/:movieTitle', async (req, res) => {
+  const {Username, movieTitle } = req.params;
+  
   try {
-    const user = await User.findByIdAndUpdate(
-      id,
-      { $pull: { favoriteMovies: movieTitle } },
+    const user = await Users.findOneAndUpdate({ username: req.params.Username },
+      { $pull: { Favorites: movieTitle } },
       { new: true }
     );
 
     if (user) {
-      res.status(200).send(`${movieTitle} has been removed from ${id} favorites`);
+      res.status(200).send(`${movieTitle} has been removed from ${Username} favorites`);
     } else {
       res.status(400).send('No such user');
     }
   } catch (error) {
+    console.error("error", error)
     res.status(500).send('An error occurred');
   }
 });
 
 
-//9. Allow existing users to deregister (showing only a text
-// that a user email has been removed—more on this later)
+/////////// 9. Allow existing users to deregister 
 app.delete('/users/:Username', (req, res) => {
-  Users.findOneAndRemove({ Username: req.params.Username })
+  Users.findOneAndRemove({ username: req.params.Username })
     .then((users) => {
       if (!users) {
         res.status(400).send(req.params.Username + ' was not found');
