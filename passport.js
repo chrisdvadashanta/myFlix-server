@@ -18,7 +18,10 @@ let Users = Models.Users,
           console.log('incorrect username');
           return callback(null, false, { message: 'Incorrect username or password.' });
         }
-  
+        if (!user.validatePassword(password)) {                       //////hashing Password
+          console.log('incorrect password');
+          return callback(null, false, {message: 'Incorrect password.'});
+        }
         console.log('finished');
         return callback(null, user);
       })
