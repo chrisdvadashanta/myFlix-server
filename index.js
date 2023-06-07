@@ -4,7 +4,8 @@ const express = require('express'),
   path = require('path')
   bodyParser = require('body-parser'),
   methodOverride = require('method-override'),
-  uuid = require('uuid');
+  uuid = require('uuid'),
+  { check, validationResult } = require('express-validator');
 
 //////////// MONGOOSE Integration ////////////////    
 const mongoose = require('mongoose');
@@ -17,6 +18,27 @@ mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useU
 
 /////// EXPRESS ///////
 const app = express();
+
+//////Corse///////
+const cors = require('cors');
+app.use(cors());
+
+/*
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback (null,true);
+    if (allowedOrigins.indexOf(origin) === -1){
+      let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+      return callback(new Error(message), false);
+    }
+    return callback(null, true);
+  }
+}))
+*/
+
+
+////// Body Parser///////
 app.use(bodyParser.urlencoded({ extended: true })),
 app.use(bodyParser.json());
 
@@ -36,6 +58,8 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.get("/error/", (req, res, next) => {
   next(new Error("/ is not valid!")); // Pass the error to the error middleware
 });
+
+/////////Data about Movies/////////////
 
 ///////// 1. Gets the list of data about ALL movies 
 app.get('/movies', passport.authenticate('jwt', { session: false }),    (req, res) => {
@@ -96,8 +120,30 @@ app.get( '/movies/genre/:genreName',  passport.authenticate('jwt', { session: fa
   }
 );
 
+////////////Users///////////////
+
 /////////// 5. Allow new users to register 
-app.post('/users', (req, res) => {
+app.post('/users',
+// Validation logic here for request
+//you can either use a chain of methods like .not().isEmpty()
+//which means "opposite of isEmpty" in plain english "is not empty"
+//or use .isLength({min: 5}) which means
+//minimum value of 5 characters are only allowed
+[
+  check('Username', 'Username is required').isLength({min: 5}),
+  check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('Password', 'Password is required').not().isEmpty(),
+  check('Email', 'Email does not appear to be valid').isEmail()
+], (req, res) => {
+
+// check the validation object for errors
+  let errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+  
+  let hashedPassword = Users.hashPassword(req.body.Password);  ////hashing password
   Users.findOne({ username: req.body.username })
     .then((user) => {
       if (user) {
@@ -105,7 +151,7 @@ app.post('/users', (req, res) => {
       } else {
         Users.create({
             username: req.body.username,
-            password: req.body.password,
+            password: hashedPassword,         /////hashing Password
             email: req.body.email,
             birthday: req.body.birthday
           })
@@ -126,7 +172,6 @@ app.post('/users', (req, res) => {
 
 /////////// 6. Allow users to update their user info (username)
 app.put('/users/:username',  passport.authenticate('jwt', { session: false }),    (req, res) => {
-  console.log("req.body", req.body)
   Users.findOneAndUpdate(
     { username: req.params.username },
     {
@@ -213,6 +258,7 @@ app.use((err, req, res, next) => {
   res.status(500).send('Internal Server Error');
 });
 
-app.listen(8080, () => {
-  console.log('Your app is listening on port 8080.');
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0',() => {
+ console.log('Listening on Port ' + port);
 });
