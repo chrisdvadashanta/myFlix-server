@@ -4,8 +4,9 @@ const express = require('express'),
   path = require('path')
   bodyParser = require('body-parser'),
   methodOverride = require('method-override'),
-  uuid = require('uuid'),
-  { check, validationResult } = require('express-validator');
+  uuid = require('uuid');
+  
+const { check, validationResult } = require('express-validator');
 
 //////////// MONGOOSE Integration ////////////////    
 const mongoose = require('mongoose');
@@ -14,7 +15,8 @@ const Models = require('./models');
 const Movies = Models.Movie;
 const Users = Models.Users;
 
-mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 /////// EXPRESS ///////
 const app = express();
@@ -124,26 +126,21 @@ app.get( '/movies/genre/:genreName',  passport.authenticate('jwt', { session: fa
 
 /////////// 5. Allow new users to register 
 app.post('/users',
-// Validation logic here for request
-//you can either use a chain of methods like .not().isEmpty()
-//which means "opposite of isEmpty" in plain english "is not empty"
-//or use .isLength({min: 5}) which means
-//minimum value of 5 characters are only allowed
 [
   check('Username', 'Username is required').isLength({min: 5}),
   check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-  check('Password', 'Password is required').not().isEmpty(),
+  check('Password', 'Password is required').not().isEmpty(),      // Validation logic: chain of methods{ .not().isEmpty() } =>"opposite of isEmpty" (is not empty)
   check('Email', 'Email does not appear to be valid').isEmail()
 ], (req, res) => {
 
-// check the validation object for errors
+// checks the validation object for errors
   let errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-  
-  let hashedPassword = Users.hashPassword(req.body.Password);  ////hashing password
+
+  let hashedPassword = Users.hashPassword(req.body.password);  ////hashing password
   Users.findOne({ username: req.body.username })
     .then((user) => {
       if (user) {
