@@ -18,6 +18,7 @@ const Users = Models.Users;
 //mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useUnifiedTopology: true });
 let CONNECTION_URI = "mongodb+srv://christophkeller0:12345@myflix.eh4zhje.mongodb.net/"
 mongoose.connect(CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.connect('mongodb://localhost:27017/dbname', { useNewUrlParser: true, useUnifiedTopology: true });
 
 /////// EXPRESS ///////
 const app = express();
@@ -128,12 +129,12 @@ app.get( '/movies/genre/:genreName',  passport.authenticate('jwt', { session: fa
 /////////// 5. Allow new users to register 
 app.post('/users',
 [
-  check('Username', 'Username is required').isLength({min: 5}),
-  check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-  check('Password', 'Password is required').not().isEmpty(),      // Validation logic: chain of methods{ .not().isEmpty() } =>"opposite of isEmpty" (is not empty)
-  check('Email', 'Email does not appear to be valid').isEmail()
-], (req, res) => {
-
+  check('username', 'username is required').isLength({min: 5}),
+  check('username', 'username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('password', 'password is required').not().isEmpty(),      // Validation logic: chain of methods{ .not().isEmpty() } =>"opposite of isEmpty" (is not empty)
+  check('email', 'email does not appear to be valid').isEmail()
+], 
+(req, res) => {
 // checks the validation object for errors
   let errors = validationResult(req);
 

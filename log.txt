@@ -362,3 +362,8 @@
 ::1 - - [06/Jun/2023:09:00:53 +0000] "POST /users HTTP/1.1" 500 21 "-" "PostmanRuntime/7.32.2"
 ::1 - - [07/Jun/2023:09:37:18 +0000] "POST /users HTTP/1.1" 422 390 "-" "PostmanRuntime/7.32.2"
 127.0.0.1 - - [07/Jun/2023:13:07:35 +0000] "POST /users HTTP/1.1" 200 181 "-" "PostmanRuntime/7.32.2"
+127.0.0.1 - - [13/Jun/2023:10:04:57 +0000] "POST /users HTTP/1.1" 500 21 "-" "PostmanRuntime/7.32.2"
+127.0.0.1 - - [13/Jun/2023:10:05:46 +0000] "POST /users HTTP/1.1" 422 390 "-" "PostmanRuntime/7.32.2"
+127.0.0.1 - - [13/Jun/2023:10:09:14 +0000] "POST /users HTTP/1.1" 500 102 "-" "PostmanRuntime/7.32.2"
+127.0.0.1 - - [13/Jun/2023:10:11:41 +0000] "POST /users HTTP/1.1" 422 390 "-" "PostmanRuntime/7.32.2"
+127.0.0.1 - - [13/Jun/2023:10:11:56 +0000] "POST /users HTTP/1.1" 200 189 "-" "PostmanRuntime/7.32.2"
