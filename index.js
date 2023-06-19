@@ -48,7 +48,7 @@ app.use(bodyParser.urlencoded({ extended: true })),
 app.use(bodyParser.json());
 
 //////////// Authentication ///////////
-let auth = require('./auth')(app);
+require('./auth')(app);
 const passport = require('passport');
 const { errorMonitor } = require('events');
 require('./passport');
