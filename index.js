@@ -15,11 +15,11 @@ const Models = require('./models');
 const Movies = Models.Movie;
 const Users = Models.Users;
 
-require('dotenv').config(); // Load .env file
+// require('dotenv').config(); // Load .env file
 
 
 //mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useUnifiedTopology: true });
-let CONNECTION_URI = process.env.dataBase
+// let CONNECTION_URI = process.env.dataBase
 mongoose.connect(CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 // mongoose.connect('mongodb://localhost:27017/dbname', { useNewUrlParser: true, useUnifiedTopology: true });
 
