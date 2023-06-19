@@ -369,3 +369,4 @@
 127.0.0.1 - - [13/Jun/2023:10:11:56 +0000] "POST /users HTTP/1.1" 200 189 "-" "PostmanRuntime/7.32.2"
 127.0.0.1 - - [13/Jun/2023:12:09:34 +0000] "POST /users HTTP/1.1" 200 186 "-" "PostmanRuntime/7.32.2"
 127.0.0.1 - - [13/Jun/2023:13:11:24 +0000] "POST /users HTTP/1.1" 400 24 "-" "PostmanRuntime/7.32.2"
+127.0.0.1 - - [19/Jun/2023:08:06:37 +0000] "POST /users HTTP/1.1" 200 182 "-" "PostmanRuntime/7.32.2"
