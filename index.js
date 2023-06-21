@@ -65,7 +65,7 @@ app.get("/error/", (req, res, next) => {
 /////////Data about Movies/////////////
 
 ///////// 1. Gets the list of data about ALL movies 
-app.get('/movies', passport.authenticate('jwt', { session: false }),    (req, res) => {
+app.get('/movies', (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(200).send(res.json(movies));
