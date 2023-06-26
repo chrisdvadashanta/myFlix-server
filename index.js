@@ -67,15 +67,15 @@ app.get("/error/", (req, res, next) => {
 
 ///////// 1. Gets the list of data about ALL movies 
 app.get('/movies', (req, res) => {
-  // Movies.find()
-  //   .then((movies) => {
-  //     res.status(200).send(res.json(movies));
-  //   })
-  //   .catch((error) => {
-  //     console.error(error);
-  //     res.status(500).send('Error: ' + error);
-  //   });
-  res.json("heroku error");
+  Movies.find()
+    .then((movies) => {
+      //res.status(200).send(res.json(movies));
+      res.json(movies);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
 });
 
 //////// 2. Return data (description, genre, director, image, URL, 
