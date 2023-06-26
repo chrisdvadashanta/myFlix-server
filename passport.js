@@ -1,4 +1,4 @@
-const passport = require('passport'),
+/* const passport = require('passport'),
   LocalStrategy = require('passport-local').Strategy,
   Models = require('./models.js'),
   passportJWT = require('passport-jwt');
@@ -43,3 +43,4 @@ passport.use(new JWTStrategy({
       return callback(error)
     });
 }));
+*/
