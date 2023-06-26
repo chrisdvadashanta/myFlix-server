@@ -41,7 +41,8 @@ app.use(cors({
 }))
 */
 
-////// Body Parser///////
+
+//// Body Parser///////
 app.use(bodyParser.urlencoded({ extended: true })),
 app.use(bodyParser.json());
 
@@ -54,8 +55,8 @@ const { errorMonitor } = require('events');
 app.use(express.static('public'));
 app.use(methodOverride());
 
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
-app.use(morgan('combined', { stream: accessLogStream }));
+// const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
+// app.use(morgan('combined', { stream: accessLogStream }));
 
 ////////ERROR HANDLING ////////
 app.get("/error/", (req, res, next) => {
