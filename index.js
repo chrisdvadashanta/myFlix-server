@@ -46,10 +46,17 @@ app.use(bodyParser.urlencoded({ extended: true })),
 app.use(bodyParser.json());
 
 //////////// Authentication ///////////
+<<<<<<< Updated upstream
 // require('./auth')(app);
 // const passport = require('passport');
 // const { errorMonitor } = require('events');
 // require('./passport');
+=======
+//require('./auth')(app);
+const passport = require('passport');
+const { errorMonitor } = require('events');
+require('./passport');
+>>>>>>> Stashed changes
 
 app.use(express.static('public'));
 app.use(methodOverride());
@@ -78,7 +85,11 @@ app.get('/movies', (req, res) => {
 
 //////// 2. Return data (description, genre, director, image, URL, 
 //whether it’s featured or not) about a single movie by title to the user
+<<<<<<< Updated upstream
 app.get('/movies/:title',  (req, res) => {
+=======
+app.get('/movies/:title', (req, res) => {
+>>>>>>> Stashed changes
   Movies.findOne({ Title: req.params.title })
     .then((movies) => {
       if (movies) {
@@ -95,7 +106,11 @@ app.get('/movies/:title',  (req, res) => {
 });
 
 //////// 3. Return data about a director (bio, birth year, death year) by name
+<<<<<<< Updated upstream
 app.get('/movies/director/:directorName',       (req, res) => {
+=======
+app.get('/movies/director/:directorName', (req, res) => {
+>>>>>>> Stashed changes
   Movies.findOne({ 'Director.Name': req.params.directorName })
     .then(movie => {
       if (movie) {
@@ -111,7 +126,11 @@ app.get('/movies/director/:directorName',       (req, res) => {
 });
 
 ///////// 4. Return data about a genre (description) by name/title (e.g., “Thriller”)  
+<<<<<<< Updated upstream
 app.get( '/movies/genre/:genreName',        (req, res) => {
+=======
+app.get( '/movies/genre/:genreName',    (req, res) => {
+>>>>>>> Stashed changes
     Movies.find({ 'Genre.Name': req.params.genreName })
       .then((movies) => {
         res.status(200).json(movies);
@@ -168,7 +187,11 @@ app.post('/users',
 });
 
 /////////// 6. Allow users to update their user info (username)
+<<<<<<< Updated upstream
 app.put('/users/:username',      (req, res) => {
+=======
+app.put('/users/:username', (req, res) => {
+>>>>>>> Stashed changes
   Users.findOneAndUpdate(
     { username: req.params.username },
     {
@@ -192,7 +215,11 @@ app.put('/users/:username',      (req, res) => {
 });
 
 ////////////////// 7. Allow users to add a movie to their list of favorites 
+<<<<<<< Updated upstream
 app.post('/users/:username/movies/:Title',      async (req, res) => {
+=======
+app.post('/users/:username/movies/:Title',  async (req, res) => {
+>>>>>>> Stashed changes
   const movieTitle = req.params.Title
   const movie = await Movies.findOne({Title: movieTitle});
 
@@ -209,7 +236,11 @@ app.post('/users/:username/movies/:Title',      async (req, res) => {
 
 ////////////////// 8. Allow users to remove a movie from their list of favorites
 
+<<<<<<< Updated upstream
 app.delete('/users/:username/movies/:movieTitle',      async (req, res) => {
+=======
+app.delete('/users/:username/movies/:movieTitle',  async (req, res) => {
+>>>>>>> Stashed changes
   const {username, movieTitle } = req.params;
   
   try {
@@ -231,7 +262,11 @@ app.delete('/users/:username/movies/:movieTitle',      async (req, res) => {
 
 
 /////////// 9. Allow existing users to deregister 
+<<<<<<< Updated upstream
 app.delete('/users/:username',      (req, res) => {
+=======
+app.delete('/users/:username', (req, res) => {
+>>>>>>> Stashed changes
   Users.findOneAndRemove({ username: req.params.username })
     .then((users) => {
       if (!users) {

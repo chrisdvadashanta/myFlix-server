@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 //////hashing///
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
 
 let movieSchema = mongoose.Schema({
     Title:{type:String, required:true },
@@ -29,8 +29,12 @@ let userSchema = mongoose.Schema({
 });
 
 //////bcrypt password hashing///////
+<<<<<<< Updated upstream
 /*
 userSchema.statics.hashPassword = (password) => {
+=======
+/* userSchema.statics.hashPassword = (password) => {
+>>>>>>> Stashed changes
     return bcrypt.hashSync(password, 10);
   };
   userSchema.methods.validatePassword = function(password) {
