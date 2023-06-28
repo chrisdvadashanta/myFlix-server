@@ -29,18 +29,14 @@ let userSchema = mongoose.Schema({
 });
 
 //////bcrypt password hashing///////
-<<<<<<< Updated upstream
-/*
+
 userSchema.statics.hashPassword = (password) => {
-=======
-/* userSchema.statics.hashPassword = (password) => {
->>>>>>> Stashed changes
+userSchema.statics.hashPassword = (password) => {
     return bcrypt.hashSync(password, 10);
   };
   userSchema.methods.validatePassword = function(password) {
     return bcrypt.compareSync(password, this.password);
   };
-*/
 
 
 let Movie = mongoose.model('Movie',movieSchema);

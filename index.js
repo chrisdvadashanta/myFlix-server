@@ -46,17 +46,10 @@ app.use(bodyParser.urlencoded({ extended: true })),
 app.use(bodyParser.json());
 
 //////////// Authentication ///////////
-<<<<<<< Updated upstream
 // require('./auth')(app);
 // const passport = require('passport');
 // const { errorMonitor } = require('events');
 // require('./passport');
-=======
-//require('./auth')(app);
-const passport = require('passport');
-const { errorMonitor } = require('events');
-require('./passport');
->>>>>>> Stashed changes
 
 app.use(express.static('public'));
 app.use(methodOverride());
@@ -72,7 +65,7 @@ app.get("/error/", (req, res, next) => {
 /////////Data about Movies/////////////
 
 ///////// 1. Gets the list of data about ALL movies 
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(200).res.json(movies);
