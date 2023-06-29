@@ -65,10 +65,10 @@ app.get("/error/", (req, res, next) => {
 /////////Data about Movies/////////////
 
 ///////// 1. Gets the list of data about ALL movies 
-app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/movies',  passport.authenticate('jwt', { session: false }),  (req, res) => {
   Movies.find()
     .then((movies) => {
-      res.status(200).res.json(movies);
+      res.status(200).json(movies);
     })
     .catch((error) => {
       console.error(error);
