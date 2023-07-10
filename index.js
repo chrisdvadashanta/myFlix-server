@@ -113,7 +113,7 @@ app.get('/movies/director/:directorName', (req, res) => {
 
 ///////// 4. Return data about a genre (description) by name/title (e.g., “Thriller”)  
 app.get( '/movies/genre/:genreName',    (req, res) => {
-    Movies.find({ 'Genre.Name': req.params.genreName })
+    Movies.find({ 'Genre.name': req.params.genreName })
       .then((movies) => {
         res.status(200).json(movies);
       })
