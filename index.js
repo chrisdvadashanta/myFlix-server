@@ -211,15 +211,17 @@ app.post('/users/:username/movies/:Title',  async (req, res) => {
 ////////////////// 8. Allow users to remove a movie from their list of favorites
 app.delete('/users/:username/movies/:movieTitle',  async (req, res) => {
   const {username, movieTitle } = req.params;
+  const movie = await Movies.findOne({Title: movieTitle}); 
   
   try {
-    const user = await Users.findOneAndUpdate({ username: req.params.username },
-      { $pull: { Favorites: movieTitle } },
+    const user = await Users.findOneAndUpdate({ username},
+      { $pull: { favorites: movie._id } },
       { new: true }
     );
 
     if (user) {
-      res.status(200).send(`${movieTitle} has been removed from ${username} favorites`);
+      return res.json(user);
+      // res.status(200).send(`${movieTitle} has been removed from ${username} favorites`);
     } else {
       res.status(400).send('No such user');
     }
