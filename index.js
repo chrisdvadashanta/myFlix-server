@@ -27,8 +27,7 @@ const app = express();
 const cors = require('cors');
 app.use(cors());
 
-/*
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com','myflixmovie1234.netlify.app'];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback (null,true);
@@ -39,7 +38,6 @@ app.use(cors({
     return callback(null, true);
   }
 }))
-*/
 
 ////// Body Parser///////
 app.use(bodyParser.urlencoded({ extended: true })),
