@@ -25,19 +25,20 @@ const app = express();
 
 //////Corse///////
 const cors = require('cors');
-app.use(cors());
 
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com','myflixmovie1234.netlify.app'];
+let allowedOrigins = ['http://localhost:4200', 'http://localhost:8080', 'http://testsite.com', 'https://myflixmovie1234.netlify.app'];
+
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin) return callback (null,true);
+    if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) === -1){
       let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
       return callback(new Error(message), false);
     }
     return callback(null, true);
   }
-}))
+}));
+
 
 ////// Body Parser///////
 app.use(bodyParser.urlencoded({ extended: true })),
