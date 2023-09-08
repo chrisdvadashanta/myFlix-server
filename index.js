@@ -191,21 +191,21 @@ app.put('/users/:username', (req, res) => {
     });
 });
 
-////////////////// 7. Allow users to add a movie to their list of favorites 
+////////// 7. Allow users to add a movie to their list of favorites 
 app.put(
-  '/users/:Username/:MovieId',
+  '/users/:username/:MovieId', 
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
     Users.findOneAndUpdate(
-      { Username: req.params.Username },
-      { $push: { FavoriteMovies: req.params.MovieId } },
+      { username: req.params.username }, 
+      { $push: { favorites: req.params.MovieId } },
       { new: true },
       (err, updatedUser) => {
         if (err) {
           console.error(err);
           res.status(500).send('Error: ' + err);
         } else if (!updatedUser) {
-          res.status(400).send(req.params.Username + ' was not found.');
+          res.status(400).send(req.params.username + ' was not found.');
         } else {
           res.json(updatedUser);
         }
@@ -213,6 +213,7 @@ app.put(
     );
   }
 );
+
 
 
 ////////////////// 8. Allow users to remove a movie from their list of favorites
