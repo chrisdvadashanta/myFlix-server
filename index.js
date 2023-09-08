@@ -15,9 +15,9 @@ const Models = require('./models');
 const Movies = Models.Movie;
 const Users = Models.Users;
 
-mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-////////////Local testing Code /////////////
-// mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+//////////Local testing Code /////////////
+mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 /////// EXPRESS ///////
@@ -193,19 +193,19 @@ app.put('/users/:username', (req, res) => {
 
 ////////////////// 7. Allow users to add a movie to their list of favorites 
 app.put(
-  '/users/:username/:MovieId',
+  '/users/:Username/:MovieId',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
     Users.findOneAndUpdate(
-      { username: req.params.username },
-      { $push: { favorites: req.params.MovieId } },
+      { Username: req.params.Username },
+      { $push: { FavoriteMovies: req.params.MovieId } },
       { new: true },
       (err, updatedUser) => {
         if (err) {
           console.error(err);
           res.status(500).send('Error: ' + err);
         } else if (!updatedUser) {
-          res.status(400).send(req.params.username + ' was not found.');
+          res.status(400).send(req.params.Username + ' was not found.');
         } else {
           res.json(updatedUser);
         }
