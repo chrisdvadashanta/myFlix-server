@@ -192,43 +192,51 @@ app.put('/users/:username', (req, res) => {
 });
 
 ////////////////// 7. Allow users to add a movie to their list of favorites 
-app.post('/users/:username/movies/:Title',  async (req, res) => {
-  const movieTitle = req.params.Title
-  const movie = await Movies.findOne({Title: movieTitle});
-
-  console.log("movies", movie._id);
-
-  let newUser = await Users.findOneAndUpdate({ username: req.params.username }, {
-    $push: { favorites: movie._id }
-  },
-    { new: true }, // This line makes sure that the updated document is returned
-  );
-    return res.json(newUser);
-});
+app.put(
+  '/users/:username/:MovieId',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    Users.findOneAndUpdate(
+      { username: req.params.username },
+      { $push: { favorites: req.params.MovieId } },
+      { new: true },
+      (err, updatedUser) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+        } else if (!updatedUser) {
+          res.status(400).send(req.params.username + ' was not found.');
+        } else {
+          res.json(updatedUser);
+        }
+      }
+    );
+  }
+);
 
 
 ////////////////// 8. Allow users to remove a movie from their list of favorites
-app.delete('/users/:username/movies/:movieTitle',  async (req, res) => {
-  const {username, movieTitle } = req.params;
-  const movie = await Movies.findOne({Title: movieTitle}); 
-  
-  try {
-    const user = await Users.findOneAndUpdate({ username},
-      { $pull: { favorites: movie._id } },
-      { new: true }
+app.delete(
+  '/users/:username/:MovieId',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    Users.findOneAndUpdate(
+      { username: req.params.username },
+      { $pull: { favorites: req.params.MovieId } },
+      { new: true },
+      (err, updatedUser) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+        } else if (!updatedUser) {
+          res.status(400).send(req.params.username + ' was not found.');
+        } else {
+          res.json(updatedUser);
+        }
+      }
     );
-
-    if (user) {
-      return res.json(user);
-      // res.status(200).send(`${movieTitle} has been removed from ${username} favorites`);
-    } else {
-      res.status(400).send('No such user');
-    }
-  } catch (error) {
-    console.error("error", error)
-    res.status(500).send('An error occurred');
   }
-});
+);
 
 
 /////////// 9. Allow existing users to deregister 
